@@ -9,12 +9,11 @@ phases:
       - aws --version
       - docker --version
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
-      - cd helloservice  # move into correct directory
-      - echo Moved into helloservice directory
 
   pre_build:
     commands:
       - echo Building Maven package...
+      - cd MicroService-HelloService
       - mvn clean package -DskipTests
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
@@ -34,4 +33,4 @@ phases:
 
 artifacts:
   files:
-    - helloservice/imagedefinitions.json
+    - MicroService-HelloService/imagedefinitions.json
