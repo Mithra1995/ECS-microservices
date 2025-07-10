@@ -3,33 +3,26 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17
-      docker: 20
-    commands:
-      - echo Installing Maven...
-      - mvn --version
-
-  pre_build:
+      java: corretto11
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
-      - IMAGE_REPO_URI=382828593676.dkr.ecr.us-east-1.amazonaws.com/service1
-      - IMAGE_TAG=latest
-      - echo Building the JAR...
+      - aws --version
+      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com)
+  pre_build:
+    commands:
+      - echo Building Maven project...
       - mvn clean package -DskipTests
-
   build:
     commands:
-      - echo Building Docker image...
-      - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
-
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t service1 .
+      - docker tag service1:latest 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
   post_build:
     commands:
       - echo Pushing the Docker image...
-      - docker push $IMAGE_REPO_URI:$IMAGE_TAG
-      - echo Writing image definitions file...
-      - printf '[{"name":"hello-service","imageUri":"%s"}]' $IMAGE_REPO_URI:$IMAGE_TAG > imagedefinitions.json
-
+      - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
 artifacts:
-  files:
+  files: 
+    - target/*.jar
     - imagedefinitions.json
