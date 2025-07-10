@@ -1,16 +1,13 @@
 package worldservice.controllers;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class WorldController {
 
     @GetMapping("/world")
-    public String getWorld(){
-
-        return "hello from service World \n";
-
+    public String getWorldPage() {
+        return "world"; // This maps to src/main/resources/templates/world.html
     }
-
 }
