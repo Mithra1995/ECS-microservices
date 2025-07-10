@@ -5,15 +5,17 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-      - echo Installing Docker...
-      - nohup /usr/local/bin/dockerd-entrypoint.sh &  # Start Docker Daemon
+      - echo "Checking AWS CLI and Docker..."
+      - aws --version
+      - docker --version
+      - echo "Starting Docker daemon..."
+      - nohup /usr/local/bin/dockerd-entrypoint.sh & 
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
 
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com)
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
       - echo Building the application with Maven...
       - mvn clean package -DskipTests
 
