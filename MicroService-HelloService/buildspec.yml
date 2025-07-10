@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     IMAGE_TAG: latest
-    IMAGE_REPO_URI: 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1  # Replace with service2 for WorldService
+    IMAGE_REPO_URI: 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1  # ← Replace with service2 for WorldService
 
 phases:
   install:
@@ -15,17 +15,20 @@ phases:
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $IMAGE_REPO_URI
+
   pre_build:
     commands:
-      - echo Running Maven build...
+      - echo Building JAR...
       - mvn clean package -DskipTests
+
   build:
     commands:
       - echo Building Docker image...
       - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
+
   post_build:
     commands:
-      - echo Pushing Docker image to ECR...
+      - echo Pushing Docker image to Amazon ECR...
       - docker push $IMAGE_REPO_URI:$IMAGE_TAG
 
 artifacts:
