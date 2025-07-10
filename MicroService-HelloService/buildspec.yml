@@ -21,13 +21,12 @@ phases:
   build:
     commands:
       - echo Building Docker image...
-      - docker build -t 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG .
+      - docker build -t 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest .
       - docker tag 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
 
   post_build:
     commands:
       - echo Pushing Docker images...
-      - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
 
 artifacts:
