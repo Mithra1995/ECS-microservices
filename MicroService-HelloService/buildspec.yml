@@ -4,22 +4,20 @@ phases:
   install:
     runtime-versions:
       java: corretto11
-      docker: 20
     commands:
       - echo Entering HelloService directory...
       - cd MicroService-HelloService
       - echo Logging in to Amazon ECR...
+      - aws --version
       - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com)
 
   pre_build:
     commands:
-      - echo Building the application with Maven...
-      - cd MicroService-HelloService
+      - echo Running Maven build...
       - mvn clean package -DskipTests
 
   build:
     commands:
-      - cd MicroService-HelloService
       - echo Building Docker image...
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
@@ -27,11 +25,10 @@ phases:
 
   post_build:
     commands:
-      - cd MicroService-HelloService
-      - echo Pushing Docker image to ECR...
+      - echo Pushing image to ECR...
       - docker push $IMAGE_REPO_URI:$IMAGE_TAG
       - docker push $IMAGE_REPO_URI:latest
-      - echo Writing image definitions file...
+      - echo Writing imagedefinitions.json file...
       - printf '[{"name":"service1","imageUri":"%s"}]' $IMAGE_REPO_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
