@@ -1,23 +1,27 @@
 version: 0.2
 
 phases:
-  pre_build:
+  install:
+    runtime-versions:
+      java: corretto11
+      docker: 20
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
-      - IMAGE_REPO_URI=382828593676.dkr.ecr.us-east-1.amazonaws.com/service1
+  pre_build:
+    commands:
+      - IMAGE_REPO_URI=382828593676.dkr.ecr.us-east-1.amazonaws.com/service1  # change to service2 for world
       - IMAGE_TAG=latest
   build:
     commands:
+      - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
   post_build:
     commands:
+      - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $IMAGE_REPO_URI:$IMAGE_TAG
-      - echo Writing image definitions file...
-      - printf '[{"name":"hello-container","imageUri":"%s"}]' $IMAGE_REPO_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
-  files:
-    - imagedefinitions.json
+  files: '**/*'
