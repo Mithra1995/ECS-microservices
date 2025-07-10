@@ -7,13 +7,14 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com)
+      - docker --version
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
 
   pre_build:
     commands:
-      - echo Building Maven project...
+      - echo Building Maven package...
       - mvn clean package -DskipTests
-      - export IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
   build:
     commands:
@@ -23,11 +24,11 @@ phases:
 
   post_build:
     commands:
-      - echo Pushing Docker image to ECR...
+      - echo Pushing Docker images...
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
-      - echo Writing imagedefinitions.json file...
-      - printf '[{"name":"service1","imageUri":"382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:%s"}]' $IMAGE_TAG > imagedefinitions.json
+      - echo Writing image definitions...
+      - printf '[{"name":"service1","imageUri":"%s"}]' 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
