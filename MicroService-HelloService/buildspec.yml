@@ -5,9 +5,9 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-      - echo Installing AWS CLI and logging in to Amazon ECR...
+      - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1)
+      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com)
 
   pre_build:
     commands:
