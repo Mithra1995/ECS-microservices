@@ -1,16 +1,13 @@
 package helloservice.controllers;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class HelloController {
 
     @GetMapping("/hello")
-    public String getHello() {
-
-        return "Hello from hello Service \n";
-
+    public String getHelloPage() {
+        return "hello"; // This maps to src/main/resources/templates/hello.html
     }
-
 }
