@@ -1,0 +1,6 @@
+[
+  {
+    "name": "world-container",
+    "imageUri": "382828593676.dkr.ecr.us-east-1.amazonaws.com/service2:latest"
+  }
+]
