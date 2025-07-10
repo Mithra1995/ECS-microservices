@@ -9,6 +9,8 @@ phases:
       - aws --version
       - docker --version
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
+      - cd helloservice  # move into correct directory
+      - echo Moved into helloservice directory
 
   pre_build:
     commands:
@@ -32,4 +34,4 @@ phases:
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - helloservice/imagedefinitions.json
