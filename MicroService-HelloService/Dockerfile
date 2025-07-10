@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:11
 VOLUME /tmp
 EXPOSE 80
 ADD target/*.jar app.jar
