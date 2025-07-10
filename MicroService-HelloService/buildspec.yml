@@ -4,11 +4,13 @@ phases:
   install:
     runtime-versions:
       java: corretto11
+      docker: 20
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker --version
       - cd MicroService-HelloService
+      - echo Moved to MicroService-HelloService directory
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
 
   pre_build:
@@ -29,7 +31,7 @@ phases:
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
       - echo Writing image definitions...
-      - printf '[{"name":"service1","imageUri":"%s"}]' 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"hello-container","imageUri":"%s"}]' 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
