@@ -4,13 +4,12 @@ phases:
   install:
     runtime-versions:
       java: corretto11
-      docker: 20
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker --version
+      - cd MicroService-HelloService
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
-      - cd MicroService-HelloService  # ✅ Correct path to your Maven project
 
   pre_build:
     commands:
@@ -34,4 +33,4 @@ phases:
 
 artifacts:
   files:
-    - MicroService-HelloService/imagedefinitions.json  # ✅ Adjusted path
+    - MicroService-HelloService/imagedefinitions.json
