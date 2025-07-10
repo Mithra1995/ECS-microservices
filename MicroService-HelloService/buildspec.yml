@@ -4,18 +4,19 @@ phases:
   install:
     runtime-versions:
       java: corretto11
+      docker: 20
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker --version
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
+      - cd MicroService-HelloService  # ✅ Correct path to your Maven project
 
   pre_build:
     commands:
       - echo Building Maven package...
       - mvn clean package -DskipTests
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - export IMAGE_TAG
 
   build:
     commands:
@@ -33,4 +34,4 @@ phases:
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - MicroService-HelloService/imagedefinitions.json  # ✅ Adjusted path
