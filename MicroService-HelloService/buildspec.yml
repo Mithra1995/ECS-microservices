@@ -4,36 +4,36 @@ phases:
   install:
     runtime-versions:
       java: corretto11
+      docker: 20
     commands:
-      - echo "Checking AWS CLI and Docker..."
-      - aws --version
-      - docker --version
-      - echo "Starting Docker daemon..."
-      - nohup /usr/local/bin/dockerd-entrypoint.sh & 
-      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      - echo Entering HelloService directory...
+      - cd MicroService-HelloService
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com)
 
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
       - echo Building the application with Maven...
+      - cd MicroService-HelloService
       - mvn clean package -DskipTests
 
   build:
     commands:
+      - cd MicroService-HelloService
       - echo Building Docker image...
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - docker build -t 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG .
-      - docker tag 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
+      - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_URI:$IMAGE_TAG $IMAGE_REPO_URI:latest
 
   post_build:
     commands:
+      - cd MicroService-HelloService
       - echo Pushing Docker image to ECR...
-      - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG
-      - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
+      - docker push $IMAGE_REPO_URI:$IMAGE_TAG
+      - docker push $IMAGE_REPO_URI:latest
       - echo Writing image definitions file...
-      - printf '[{"name":"service1","imageUri":"%s"}]' 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"service1","imageUri":"%s"}]' $IMAGE_REPO_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - MicroService-HelloService/imagedefinitions.json
