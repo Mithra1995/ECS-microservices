@@ -1,27 +1,33 @@
 version: 0.2
 
+env:
+  variables:
+    IMAGE_TAG: latest
+
 phases:
   install:
     runtime-versions:
       java: corretto11
-      docker: 20
     commands:
+      - echo Installing Docker...
+      - nohup /usr/local/bin/dockerd-entrypoint.sh &
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
   pre_build:
     commands:
-      - IMAGE_REPO_URI=382828593676.dkr.ecr.us-east-1.amazonaws.com/service1  # change to service2 for world
-      - IMAGE_TAG=latest
+      - echo Building the application...
+      - mvn clean package -DskipTests
+      - IMAGE_REPO_URI=382828593676.dkr.ecr.us-east-1.amazonaws.com/service1
   build:
     commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
+      - echo Building Docker image...
       - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker image...
+      - echo Pushing Docker image to ECR...
       - docker push $IMAGE_REPO_URI:$IMAGE_TAG
 
 artifacts:
-  files: '**/*'
+  files:
+    - target/*.jar
