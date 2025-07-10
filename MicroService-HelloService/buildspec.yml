@@ -18,16 +18,16 @@ phases:
     commands:
       - echo Building Docker image...
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - docker build -t $IMAGE_REPO_URI:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_URI:$IMAGE_TAG $IMAGE_REPO_URI:latest
+      - docker build -t 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG .
+      - docker tag 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
 
   post_build:
     commands:
       - echo Pushing Docker image to ECR...
-      - docker push $IMAGE_REPO_URI:$IMAGE_TAG
-      - docker push $IMAGE_REPO_URI:latest
+      - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG
+      - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
       - echo Writing image definitions file...
-      - printf '[{"name":"<container-name>","imageUri":"%s"}]' $IMAGE_REPO_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"service1","imageUri":"%s"}]' 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
