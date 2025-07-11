@@ -16,17 +16,15 @@ phases:
     commands:
       - echo Building Maven package...
       - mvn clean package -DskipTests
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
   build:
     commands:
-      - echo Building Docker image...
+      - echo Building Docker image with tag :latest...
       - docker build -t 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest .
-      - docker tag 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:$IMAGE_TAG 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
 
   post_build:
     commands:
-      - echo Pushing Docker images...
+      - echo Pushing Docker image with tag :latest...
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
 
 artifacts:
