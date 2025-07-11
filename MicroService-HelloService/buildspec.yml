@@ -8,6 +8,8 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker --version
+      - cd MicroService-HelloService
+      - echo Moved to MicroService-HelloService directory
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 382828593676.dkr.ecr.us-east-1.amazonaws.com
 
   pre_build:
@@ -17,16 +19,18 @@ phases:
 
   build:
     commands:
-      - echo Building Docker image...
+      - echo Building Docker image with tag :latest...
       - docker build -t 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest .
 
   post_build:
     commands:
-      - echo Pushing Docker image...
+      - echo Pushing Docker image with tag :latest...
       - docker push 382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest
-      - echo Writing imagedefinitions.json file...
+      - echo Writing imagedefinitions.json...
       - printf '[{"name":"hello-container","imageUri":"382828593676.dkr.ecr.us-east-1.amazonaws.com/service1:latest"}]' > imagedefinitions.json
 
 artifacts:
   files:
+    - appspec.yml
+    - taskdef.json
     - imagedefinitions.json
