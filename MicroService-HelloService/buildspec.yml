@@ -29,9 +29,6 @@ phases:
 
 artifacts:
   files:
-    artifacts:
-  files:
     - target/*.jar
     - appspec.yml
     - taskdef.json
-
